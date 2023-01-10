@@ -40,11 +40,11 @@ try{
 const getStudent=async function(req,res){
 try{
     let data=req.query
+    let filterStudent={isDeleted:false}
     if(!Object.keys(data).length){
-        let studentList=await studentModel.find(data).select({name:1,subject:1,marks:1,_id:0})
+        let studentList=await studentModel.find(filterStudent).select({name:1,subject:1,marks:1,_id:0})
         return res.status(200).send({status:true,message:"Student List",data:studentList})
     }else{
-        let filterStudent={isDeleted:false}
         let {name,subject,...rest}=data
         if(Object.keys(rest).length>0) return res.status(400).send({status:false,message:"Please Provide valid query"})
         if(name){
@@ -90,4 +90,19 @@ try{
 
 // ========================delete student data==============================================
 
-module.exports={createStudent,getStudent,updateMarks}
+const deleteStudent=async function(req,res){
+try{
+    let studentId=req.params.studentId
+    if(!IsValid(studentId)) return res.status(400).send({status:false,message:"studentID is invalid"})
+
+    let details=await studentModel.findOneAndUpdate({_id:studentId,isDeleted:false},{isDeleted:true},{new:true})
+    if(!details) return res.status(404).send({status:false,message:"No data found"})
+
+    return res.status(200).send({status:false,message:"Student Data deleted Successfully"})
+
+}catch(error){
+    return res.status(500).send({status:false,message:error.messgae})
+}
+}
+
+module.exports={createStudent,getStudent,updateMarks,deleteStudent}
