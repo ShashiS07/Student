@@ -1,0 +1,25 @@
+{
+  "name": "student",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShashiS07/Student.git"
+  },
+  "author": "Shashi Shekhar Singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShashiS07/Student/issues"
+  },
+  "homepage": "https://github.com/ShashiS07/Student#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.3",
+    "nodemon": "^2.0.20"
+  }
+}
