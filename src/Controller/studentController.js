@@ -20,6 +20,10 @@ try{
     if(Object.keys(rest).length>0) return res.status(400).send({status:false,message:"Please provide name,subject and marks"})
 
     if(!name) return res.status(400).send({status:false,message:"Please provide name"})
+    if(name){
+        let checkname=await studentModel.find({name})
+        if(checkname.length>0) return res.status(400).send({status:false,message:"This name is already taken"})
+    }
     if(!subject) return res.status(400).send({status:false,message:"Please provide subject"})
     if(!marks) return res.status(400).send({status:false,message:"Please provide marks"})
 
@@ -40,7 +44,7 @@ try{
         let studentList=await studentModel.find(data).select({name:1,subject:1,marks:1,_id:0})
         return res.status(200).send({status:true,message:"Student List",data:studentList})
     }else{
-        let filterStudent={}
+        let filterStudent={isDeleted:false}
         let {name,subject,...rest}=data
         if(Object.keys(rest).length>0) return res.status(400).send({status:false,message:"Please Provide valid query"})
         if(name){
@@ -59,4 +63,31 @@ try{
 }
 }
 
-module.exports={createStudent,getStudent}
+// =================================update student marks=====================================
+
+const updateMarks=async function(req,res){
+try{
+    let data=req.body
+    if(!Object.keys(data).length) return res.status(400).send({status:false,message:"Please provide some data"})
+
+    let {name,subject,marks,...rest}=data
+    if(Object.keys(rest).length>0) return rest.status(400).send({status:false,message:"Please Provide Only name,subject and marks"})
+
+    let checkStudentExist=await studentModel.findOne({name,subject}).select({name:1,subject:1,marks:1,_id:0})
+    if(!checkStudentExist){
+        let newStudent=await studentModel.create(data)
+        return res.status(201).send({status:true,message:"Success",data:newStudent})
+    }else{
+        let updatemarks=checkStudentExist.marks+marks
+        let updateStudent=await studentModel.findOneAndUpdate({name},{marks:updatemarks},{new:true})
+        return res.status(200).send({status:true,message:"Marks added",data:updateStudent})
+    }
+
+}catch(error){
+    return res.status(500).send({status:false,message:error.message})
+}    
+}
+
+// ========================delete student data==============================================
+
+module.exports={createStudent,getStudent,updateMarks}
